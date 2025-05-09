@@ -1,2 +1,2 @@
-# LittleUmaMaid
+# UmaLittleMaid
 Umapyoi &amp; TLM Addon
