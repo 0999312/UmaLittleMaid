@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "net.tracen.uma_maid.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "mixins.uma_maid.refmap.json",
+  "mixins": [
+	"BaubleItemHandlerMixin"
+	],
+  "client": [
+	"BedrockCubePreFaceMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
