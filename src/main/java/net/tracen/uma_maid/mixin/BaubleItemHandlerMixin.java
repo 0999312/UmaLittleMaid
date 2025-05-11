@@ -22,7 +22,6 @@ public class BaubleItemHandlerMixin implements IPreviousItemHandler {
 
 	@Override
 	public ItemStack getPreviousStack() {
-		// TODO Auto-generated method stub
 		return previousItems;
 	}
 

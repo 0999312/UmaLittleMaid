@@ -5,20 +5,25 @@ import java.util.UUID;
 import com.github.tartaricacid.touhoulittlemaid.api.bauble.IMaidBauble;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
+import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.tracen.uma_maid.network.NetworkPacketHandler;
+import net.tracen.uma_maid.network.SyncBaublePacket;
 import net.tracen.uma_maid.utils.IPreviousItemHandler;
 import net.tracen.uma_maid.utils.TLMUtils;
 import net.tracen.umapyoi.UmapyoiConfig;
@@ -34,15 +39,35 @@ public class UmaSoulBaubles implements IMaidBauble {
 	public UmaSoulBaubles() {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
+	
+	@SubscribeEvent
+	public void onTrackingPlayer(PlayerEvent.StartTracking event)  {
+        Entity target = event.getTarget();
+        Player player = event.getEntity();
+        if (target instanceof EntityMaid maid) {
+            BaubleItemHandler handler = maid.getMaidBauble();
+            for (int i = 0; i < handler.getSlots(); i++) {
+                ItemStack bauble = handler.getStackInSlot(i);
+                if(bauble.is(ItemRegistry.UMA_SOUL.get())) {
+	                SyncBaublePacket packet = new SyncBaublePacket(maid.getId(), i, bauble);
+	                NetworkPacketHandler.sendToClientPlayer(packet, player);
+	                return;
+                }
+            }
+        }
+	}
 
 	@SubscribeEvent
 	public void tick(LivingEvent.LivingTickEvent event) {
 		if (event.getEntity() instanceof Mob mob) {
 			IMaid maid = IMaid.convert(mob);
-			if (maid == null) {
+			if (maid == null) 
 				return;
-			}
+			
 			EntityMaid maidEntity = maid.asStrictMaid();
+			if (maidEntity == null) 
+				return;
+			
 			Multimap<Attribute, AttributeModifier> attributeModifiers;
 			
 	        IPreviousItemHandler handler = (IPreviousItemHandler) maidEntity.getMaidBauble();
