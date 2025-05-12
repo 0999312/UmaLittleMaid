@@ -20,7 +20,7 @@ public class UmaMaid {
 	public UmaMaid() {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::setup);
-		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, UmaMaidConfig.SPEC);
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, UmaMaidConfig.SPEC);
 	}
 	
     private void setup(final FMLCommonSetupEvent event) {

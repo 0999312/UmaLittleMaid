@@ -1,6 +1,7 @@
 package net.tracen.uma_maid.client;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockModelPOJO;
+import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.RenderMaidEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
@@ -30,8 +31,10 @@ public class ClientEvents {
 		
 		if(!UmaMaidConfig.renderEnable)
 			return;
-		
-		ItemStack soul = TLMUtils.getBaubleItemInMaid(event.getMaid().asStrictMaid(), UmaMaidExtension.UMA_SOUL_BAUBLES);
+		IMaid maid = event.getMaid();
+		if (maid == null) 
+			return;
+		ItemStack soul = TLMUtils.getBaubleItemInMaid(maid.asStrictMaid(), UmaMaidExtension.UMA_SOUL_BAUBLES);
 		if(soul.isEmpty())
 			return;
 		

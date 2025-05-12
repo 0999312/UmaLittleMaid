@@ -10,6 +10,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.tracen.uma_maid.UmaMaidConfig;
 import net.tracen.uma_maid.UmaMaidExtension;
 import net.tracen.uma_maid.utils.TLMUtils;
 import net.tracen.umapyoi.utils.UmaSoulUtils;
@@ -19,6 +20,9 @@ public class EntityMaidMixin {
 
     @Inject(method = "getTypeName", at = @At(value = "HEAD"), cancellable = true)
     private void getTypeNameMixin(CallbackInfoReturnable<Component> cir) {
+		if(!UmaMaidConfig.renderEnable)
+			return;
+		
     	EntityMaid maid = (EntityMaid) (Object) this;
         ItemStack stack = TLMUtils.getBaubleItemInMaid(maid, UmaMaidExtension.UMA_SOUL_BAUBLES);
     	if(!stack.isEmpty()) {

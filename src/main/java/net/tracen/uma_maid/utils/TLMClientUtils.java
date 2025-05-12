@@ -15,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class TLMClientUtils {
     // 很蠢的做法，但是就这样吧
-	// 由于和马儿蹦跳使用同类型模型，所以不需要额外输出日志判定
+	// 由于和马儿蹦跳使用同一模型，所以不需要额外输出日志判定
 	public static final HashMap<ResourceLocation, BedrockModelPOJO> MODEL_MAP = Maps.newHashMap();
 
 	@OnlyIn(Dist.CLIENT)
