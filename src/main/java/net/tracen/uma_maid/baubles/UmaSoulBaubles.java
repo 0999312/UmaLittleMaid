@@ -49,7 +49,9 @@ public class UmaSoulBaubles implements IMaidBauble {
             for (int i = 0; i < handler.getSlots(); i++) {
                 ItemStack bauble = handler.getStackInSlot(i);
                 if(bauble.is(ItemRegistry.UMA_SOUL.get())) {
-	                SyncBaublePacket packet = new SyncBaublePacket(maid.getId(), i, bauble);
+                	IPreviousItemHandler previousHandler = (IPreviousItemHandler) handler;
+	                SyncBaublePacket packet = new SyncBaublePacket(maid.getId(), i, bauble, previousHandler.getPreviousStack());
+	                
 	                NetworkPacketHandler.sendToClientPlayer(packet, player);
 	                return;
                 }
@@ -73,6 +75,7 @@ public class UmaSoulBaubles implements IMaidBauble {
 	        IPreviousItemHandler handler = (IPreviousItemHandler) maidEntity.getMaidBauble();
 	        ItemStack soul = TLMUtils.getBaubleItemInMaid(maidEntity, this);
 	        ItemStack previousStack = handler.getPreviousStack();
+	        
 	        if(!ItemStack.matches(soul, previousStack)) {
 	        	if(!previousStack.isEmpty()) {
 	        		attributeModifiers = this.getAttributeModifiers(maidEntity, previousStack);

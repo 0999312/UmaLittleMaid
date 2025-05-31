@@ -32,8 +32,9 @@ public class ClientEvents {
 		if(!UmaMaidConfig.renderEnable)
 			return;
 		IMaid maid = event.getMaid();
-		if (maid == null) 
+		if (maid == null || maid.asStrictMaid() == null) 
 			return;
+		
 		ItemStack soul = TLMUtils.getBaubleItemInMaid(maid.asStrictMaid(), UmaMaidExtension.UMA_SOUL_BAUBLES);
 		if(soul.isEmpty())
 			return;
@@ -44,7 +45,11 @@ public class ClientEvents {
 		BedrockModel<Mob> model = new UmamusumeTLMModel(pojo);
 		
 		event.getModelData().setModel(model);
-		event.getModelData().setAnimations(CustomPackLoader.MAID_MODELS.getAnimation(DEFAULT_MODEL_ID).orElseThrow());
+		
+		CustomPackLoader.MAID_MODELS.getAnimation(DEFAULT_MODEL_ID).ifPresent(animation->{
+			event.getModelData().setAnimations(animation);
+		});
+		
 		event.getModelData().setInfo(new MaidModelInfo() {
 			@Override
 			public String getName() {

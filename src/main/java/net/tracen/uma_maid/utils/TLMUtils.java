@@ -8,7 +8,9 @@ import net.minecraft.world.item.ItemStack;
 public final class TLMUtils {
 	
     public static ItemStack getBaubleItemInMaid(EntityMaid maid, IMaidBauble bauble) {
-        BaubleItemHandler handler = maid.getMaidBauble();
+        
+    	BaubleItemHandler handler = maid.getMaidBauble();
+        
         for (int i = 0; i < handler.getSlots(); i++) {
             IMaidBauble baubleIn = handler.getBaubleInSlot(i);
             if (baubleIn == bauble) {
