@@ -7,10 +7,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class ClientSetupEvents {
-
-	@SubscribeEvent
-	public static void resourceLoadingListener(final RegisterClientReloadListenersEvent event) {
-		event.registerReloadListener(new TLMResourceLoader("models/umapyoi"));
-	}
-
+    @SubscribeEvent
+    public static void resourceLoadingListener(final RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(new TLMResourceLoader("models/umapyoi"));
+    }
 }
