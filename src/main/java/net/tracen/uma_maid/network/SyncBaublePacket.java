@@ -1,9 +1,6 @@
 package net.tracen.uma_maid.network;
 
-import java.util.function.Supplier;
-
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
@@ -13,16 +10,19 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
 import net.tracen.uma_maid.utils.IPreviousItemHandler;
 
+import java.util.function.Supplier;
+
 public class SyncBaublePacket {
-	private final int id;
-	private final int index;
-	private final ItemStack bauble;
-	private final ItemStack previous;
+    private final int id;
+    private final int index;
+    private final ItemStack bauble;
+    private final ItemStack previous;
+
     public SyncBaublePacket(FriendlyByteBuf buffer) {
-    	id = buffer.readInt();
-    	index = buffer.readInt();
-    	bauble = buffer.readItem();
-    	previous = buffer.readItem();
+        id = buffer.readInt();
+        index = buffer.readInt();
+        bauble = buffer.readItem();
+        previous = buffer.readItem();
     }
 
     public SyncBaublePacket(int id, int index, ItemStack bauble, ItemStack previous) {
@@ -54,8 +54,7 @@ public class SyncBaublePacket {
             return;
         }
         Entity e = mc.level.getEntity(message.id);
-        if (e instanceof EntityMaid && e.isAlive()) {
-            EntityMaid maid = (EntityMaid) e;
+        if (e instanceof EntityMaid maid && maid.isAlive()) {
             maid.getMaidBauble().setStackInSlot(message.index, message.bauble);
             IPreviousItemHandler handler = (IPreviousItemHandler) maid.getMaidBauble();
             handler.setPreviousStack(message.previous);
