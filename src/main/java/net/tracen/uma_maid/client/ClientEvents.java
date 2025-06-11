@@ -1,9 +1,13 @@
 package net.tracen.uma_maid.client;
 
+import com.github.tartaricacid.touhoulittlemaid.api.event.MaidTypeNameEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.RenderMaidEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.Util;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -45,6 +49,19 @@ public class ClientEvents {
         CustomPackLoader.MAID_MODELS.getAnimation(DEFAULT_MODEL_ID).ifPresent(animation -> event.getModelData().setAnimations(animation));
         event.getModelData().setInfo(new UmaMaidModelInfo(name));
         event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void onShowMaidName(MaidTypeNameEvent event) {
+        if (!UmaMaidConfig.RENDER_UMAMUSUME.get()) {
+            return;
+        }
+        EntityMaid maid = event.getMaid();
+        ItemStack stack = TLMUtils.getBaubleItemInMaid(maid, UmaMaidExtension.UMA_SOUL_BAUBLES);
+        if (!stack.isEmpty()) {
+            MutableComponent name = Component.translatable(Util.makeDescriptionId("umadata", UmaSoulUtils.getName(stack)));
+            event.setTypeName(name);
+        }
     }
 
     private static class UmaMaidModelInfo extends MaidModelInfo {

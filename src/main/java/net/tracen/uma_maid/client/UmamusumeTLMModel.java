@@ -3,6 +3,7 @@ package net.tracen.uma_maid.client;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockModelPOJO;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockVersion;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.google.common.collect.Lists;
@@ -60,6 +61,9 @@ public class UmamusumeTLMModel extends BedrockModel<Mob> {
             this.longHairParts.forEach(part -> part.xRot = -this.head.xRot);
         } else {
             this.longHairParts.forEach(part -> part.xRot = 0F);
+        }
+        if (entityIn.isSleeping()) {
+            GlWrapper.translate(0, 0.25F, 0);
         }
     }
 

@@ -4,11 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "mixins.uma_maid.refmap.json",
   "mixins": [
-    "BaubleItemHandlerMixin",
-    "EntityMaidMixin"
-  ],
-  "client": [
-    "BedrockCubePreFaceMixin"
+    "BaubleItemHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
