@@ -1,12 +1,12 @@
 package net.tracen.uma_maid;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class UmaMaidConfig {
-    public static ForgeConfigSpec.BooleanValue RENDER_UMAMUSUME;
+    public static ModConfigSpec.BooleanValue RENDER_UMAMUSUME;
 
-    public static ForgeConfigSpec init() {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+    public static ModConfigSpec init() {
+    	ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         builder.comment("Whether to render umamusume when maid equipped the soul.");
         RENDER_UMAMUSUME = builder.define("renderUmamusume", true);

@@ -12,6 +12,6 @@ public class UmaMaidExtension implements ILittleMaid {
 
     @Override
     public void bindMaidBauble(BaubleManager manager) {
-        manager.bind(ItemRegistry.UMA_SOUL, UMA_SOUL_BAUBLES);
+        manager.bind(ItemRegistry.UMA_SOUL.get(), UMA_SOUL_BAUBLES);
     }
 }

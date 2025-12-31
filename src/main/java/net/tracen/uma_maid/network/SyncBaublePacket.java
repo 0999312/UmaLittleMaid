@@ -1,52 +1,49 @@
 package net.tracen.uma_maid.network;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.tracen.uma_maid.UmaMaid;
 import net.tracen.uma_maid.utils.IPreviousItemHandler;
 
-import java.util.function.Supplier;
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+public record SyncBaublePacket(int id, int index, ItemStack bauble, ItemStack previous) implements CustomPacketPayload {
+	public static final Type<SyncBaublePacket> TYPE = new Type<>(
+			ResourceLocation.fromNamespaceAndPath(UmaMaid.MODID, "sync_bauble"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, SyncBaublePacket> STREAM_CODEC = StreamCodec
+			.composite(
+					ByteBufCodecs.INT, SyncBaublePacket::id, 
+					ByteBufCodecs.INT, SyncBaublePacket::index,
+					ItemStack.STREAM_CODEC, SyncBaublePacket::bauble,
+					ItemStack.STREAM_CODEC, SyncBaublePacket::previous,
+					SyncBaublePacket::new
+					);
 
-public class SyncBaublePacket {
-    private final int id;
-    private final int index;
-    private final ItemStack bauble;
-    private final ItemStack previous;
-
-    public SyncBaublePacket(FriendlyByteBuf buffer) {
-        id = buffer.readInt();
-        index = buffer.readInt();
-        bauble = buffer.readItem();
-        previous = buffer.readItem();
-    }
-
-    public SyncBaublePacket(int id, int index, ItemStack bauble, ItemStack previous) {
-        this.id = id;
-        this.index = index;
-        this.bauble = bauble;
-        this.previous = previous;
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeInt(this.id);
-        buf.writeInt(this.index);
-        buf.writeItem(this.bauble);
-        buf.writeItem(this.previous);
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-        if (context.getDirection().getReceptionSide().isClient()) {
-            context.enqueueWork(() -> syncItem(this));
-        }
-        context.setPacketHandled(true);
-    }
-
+	@Override
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
+	
+	public static void handle(SyncBaublePacket payload, IPayloadContext context) {
+		if(context.flow().isClientbound()) {
+			 context.enqueueWork(() -> syncItem(payload));
+		}
+	}
+	
     @OnlyIn(Dist.CLIENT)
     private static void syncItem(SyncBaublePacket message) {
         Minecraft mc = Minecraft.getInstance();
