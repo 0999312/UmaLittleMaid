@@ -2,25 +2,15 @@ package net.tracen.uma_maid.baubles;
 
 import com.github.tartaricacid.touhoulittlemaid.api.bauble.IMaidBauble;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.tracen.uma_maid.network.NetworkPacketHandler;
-import net.tracen.uma_maid.network.SyncBaublePacket;
-import net.tracen.uma_maid.utils.IPreviousItemHandler;
-import net.tracen.uma_maid.utils.TLMUtils;
 import net.tracen.umapyoi.UmapyoiConfig;
 import net.tracen.umapyoi.events.SettingPropertyEvent;
 import net.tracen.umapyoi.item.ItemRegistry;
@@ -34,52 +24,7 @@ public class UmaSoulBaubles implements IMaidBauble {
     public static final UUID UMASOUL_MAID_UUID = UUID.fromString("90d6e90a-3340-43f5-9cd5-4b232b48608e");
 
     public UmaSoulBaubles() {
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SubscribeEvent
-    public void onTrackingPlayer(PlayerEvent.StartTracking event) {
-        Entity target = event.getTarget();
-        Player player = event.getEntity();
-        if (!(target instanceof EntityMaid maid)) {
-            return;
-        }
-        BaubleItemHandler handler = maid.getMaidBauble();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack bauble = handler.getStackInSlot(i);
-            if (!bauble.is(ItemRegistry.UMA_SOUL.get())) {
-                continue;
-            }
-            IPreviousItemHandler previousHandler = (IPreviousItemHandler) handler;
-            SyncBaublePacket packet = new SyncBaublePacket(maid.getId(), i, bauble, previousHandler.getPreviousStack());
-            NetworkPacketHandler.sendToClientPlayer(packet, player);
-            return;
-        }
-    }
-
-    @SubscribeEvent
-    public void tick(LivingEvent.LivingTickEvent event) {
-        if (event.getEntity() instanceof EntityMaid maidEntity) {
-            Multimap<Attribute, AttributeModifier> attributeModifiers;
-
-            IPreviousItemHandler handler = (IPreviousItemHandler) maidEntity.getMaidBauble();
-            ItemStack soul = TLMUtils.getBaubleItemInMaid(maidEntity, this);
-            ItemStack previousStack = handler.getPreviousStack();
-
-            if (!ItemStack.matches(soul, previousStack)) {
-                if (!previousStack.isEmpty()) {
-                    attributeModifiers = this.getAttributeModifiers(maidEntity, previousStack);
-                    maidEntity.getAttributes().removeAttributeModifiers(attributeModifiers);
-                    handler.setPreviousStack(ItemStack.EMPTY);
-                }
-            }
-
-            if (!TLMUtils.getBaubleItemInMaid(maidEntity, this).isEmpty()) {
-                attributeModifiers = this.getAttributeModifiers(maidEntity, soul);
-                maidEntity.getAttributes().addTransientAttributeModifiers(attributeModifiers);
-                handler.setPreviousStack(soul);
-            }
-        }
+//        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EntityMaid maid, ItemStack stack) {
@@ -146,4 +91,27 @@ public class UmaSoulBaubles implements IMaidBauble {
                 (x > statLimit ? (-0.125 * UmapyoiConfig.STAT_LIMIT_REDUCTION_RATE.get()) : -0.125) * (x - statLimit));
         return 1 / denominator;
     }
+    
+    @Override
+    public void onPutOn(EntityMaid maid, ItemStack baubleItem) {
+    	IMaidBauble.super.onPutOn(maid, baubleItem);
+    	Multimap<Attribute, AttributeModifier> attributeModifiers = this.getAttributeModifiers(maid, baubleItem);
+    	maid.getAttributes().addTransientAttributeModifiers(attributeModifiers);
+    }
+    
+    @Override
+    public void onTakeOff(EntityMaid maid, ItemStack baubleItem) {
+    	IMaidBauble.super.onTakeOff(maid, baubleItem);
+    	Multimap<Attribute, AttributeModifier> attributeModifiers = this.getAttributeModifiers(maid, baubleItem);
+        maid.getAttributes().removeAttributeModifiers(attributeModifiers);
+    }
+
+    @Override
+    public boolean syncClient(EntityMaid maid, ItemStack baubleItem) {
+    	if(baubleItem.is(ItemRegistry.UMA_SOUL.get()))
+    		return true;
+    	return IMaidBauble.super.syncClient(maid, baubleItem);
+    }
+
+
 }
